@@ -1,0 +1,25 @@
+LIST P=16F84A
+    #include <P16F84A.INC>
+
+    ORG 0x00
+
+start:
+    bsf     STATUS, RP0     ; Switch to Bank 1
+    movlw   0x01            ; Set RA0 as Input (button), RA1 as Output (LED)
+    movwf   TRISA
+    bcf     STATUS, RP0     ; Switch back to Bank 0
+
+main_loop:
+    btfss   PORTA, 0        ; Check RA0. Is the button pressed (Logical 1)?
+    goto    turn_off        ; No (it's 0), so go turn the LED off
+    
+turn_on:
+    movlw   0x02            ; Yes (it's 1), write 0000 0010 to PORTA (RA1 High)
+    movwf   PORTA
+    goto    main_loop       ; Go back and check the button again
+
+turn_off:
+    clrf    PORTA           ; Clear PORTA (RA1 Low, LED Off)
+    goto    main_loop       ; Go back and check the button again
+
+    END
